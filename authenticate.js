@@ -34,4 +34,18 @@ exports.jwtPassport = passport.use(new JwtStrategy(opts, (jwt_payload, done) => 
   });
 }));
 
+exports.jwtPassport = passport.use(new JwtStrategy(opts, (jwt_payload, done) => {
+  console.log("JWT payload: ", jwt_payload);
+  User.findOne({_id: jwt_payload._id}, (err, user) => {
+    if(err){
+      return done(err, false);
+    }else if(user.admin){
+      return done(null, user);
+    }else{
+      return done(null, false);
+    }
+  });
+}));
+
 exports.verifyUser = passport.authenticate('jwt', {session: false});
+exports.verifyAdmin = passport.authenticate('jwt', {session: false});
